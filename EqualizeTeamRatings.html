@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<body>
+
+<h2>Equalize Team Ratings</h2>
+<p id="WrittenBy">Written by Bernhard Strasser ([o.p.]kanalratte).</p>
+<p id="Version">Version 0.1.</p>
+<p id="UseOrReuse">Feel free to use or reuse this html & javascript code.</p>
+
+
+<button type="button" onclick="CalcAndShowResults()">Start Calculation...</button>
+
+
+<table>
+</table>
+
+<p id="Output0">Result: </p>
+<p id="Output1"></p>
+
+
+
+<script>
+
+
+
+function CalcAndShowResults() {
+
+	
+	FilterOptions = {MaxRatingDiff:200, TeamA_WantedPlayers:[0, 2], TeamA_UnwantedPlayers:[], TeamB_WantedPlayers:[0], TeamB_UnwantedPlayers:[1], MaxShownMatches: 100};
+	PartySize = 4;
+	//TeamA = {Names: ["fatman","Drinky","Martinzilla","kanalratte","Frankie","GuentherrDerRinge", "Dietrich"], Ratings: [2100, 1700, 1650, 1500, 1450, 1450, 1350], PlayerNo: [0, 1, 2, 3, 4, 5, 6]};
+	TeamA = {Names: ["fatman","Drinky","Martinzilla","kanalratte"], Ratings: [2100, 1700, 1650, 1500], PlayerNo: 4};
+	TeamB = {Names: ["Mettiu","paviz","Zuccolo","Judd_vp","Canazzo"], Ratings: [1900, 1730, 1900, 1750, 1450], PlayerNo: 5};	
+
+
+	// Calculate all possible parties for both teams
+	AllPartiesTeamA = CalcAllUniqueCombinations(TeamA.PlayerNo,PartySize);
+	AllPartiesTeamB = CalcAllUniqueCombinations(TeamB.PlayerNo,PartySize);
+	
+	
+	// Calculate all possible matches
+	AllMatches = CalcAllMatches(AllPartiesTeamA, AllPartiesTeamB,TeamA,TeamB,PartySize);
+	
+	// Sort Matches by Rating-Diff
+	AllMatches.sort(compareByLastColumn);
+	
+	// Filter Matches
+	FilteredMatches = FilterMatches(AllMatches,FilterOptions);
+	
+	// Create Human-Readable Matches
+
+
+	//document.write('<pre>' + JSON.stringify(CalcAllUniqueCombinations(["19", "21", "42", "23", "25", "28"], 4), 0, 4) + '</pre>');
+	document.getElementById("Output1").innerHTML = "Result: " + TeamA.Names[0];  
+	//console.table(values);
+}
+
+
+function FilterMatches(AllMatches,FilterOptions) {
+	
+	// Filter Matches
+	FilteredMatches = [];
+	RatingDiffIndex = AllMatches[0].length - 1;
+	PartySize = (AllMatches[0].length-2)/2;
+	CurSavedMatches = 0;
+	for (let ii=0;  ii<AllMatches.length; ii++){
+		
+			// Max Shown Matches Condition
+			if(CurSavedMatches >= FilterOptions.MaxShownMatches){
+				break;
+			}
+		
+			// Absolute Rating Difference Condition
+			RatingDifferenceCondition = Math.abs(AllMatches[ii][RatingDiffIndex]) <= FilterOptions.MaxRatingDiff;
+			
+			// Wanted Player Conditions for Both Teams
+			WantedPlayersCondition = CheckForWantedPlayer(AllMatches[ii],FilterOptions.TeamA_WantedPlayers,true);
+			if(WantedPlayersCondition){
+				WantedPlayersCondition = WantedPlayersCondition && CheckForWantedPlayer(AllMatches[ii],FilterOptions.TeamB_WantedPlayers,false);							
+			}
+
+			// Unwanted Player Conditions for Both Teams
+			UnwantedPlayersCondition = CheckForUnwantedPlayer(AllMatches[ii],FilterOptions.TeamA_UnwantedPlayers,true);		
+			if(UnwantedPlayersCondition){
+				UnwantedPlayersCondition = CheckForUnwantedPlayer(AllMatches[ii],FilterOptions.TeamB_UnwantedPlayers,false);						
+			}
+
+			// Save Matches which Fulfill Our Wishes
+			if(RatingDifferenceCondition && WantedPlayersCondition && UnwantedPlayersCondition)
+			{
+				CurSavedMatches++;
+				FilteredMatches.push(AllMatches[ii]);
+			}
+	}
+	
+	return FilteredMatches;
+	
+}
+
+
+function CheckForWantedPlayer(CurMatch,WantedPlayers,TeamA_flag){
+  PartySize = (AllMatches[0].length-2)/2;
+	CurMatchIndex_TeamOffset = 0;
+	if(!TeamA_flag){
+		CurMatchIndex_TeamOffset = PartySize+1; 
+	}
+	WantedPlayersCondition = true;
+	for (let kk=0;  kk<WantedPlayers.length; kk++){
+		Tmp = false;
+		for (let jj=0;  jj<PartySize; jj++){
+			if(CurMatch[jj+CurMatchIndex_TeamOffset] == WantedPlayers[kk]){
+				Tmp = true; break;
+			}
+		}
+		if(!Tmp){
+			WantedPlayersCondition = false; break;
+		}
+	}	
+	return WantedPlayersCondition;
+}
+
+
+function CheckForUnwantedPlayer(CurMatch,UnwantedPlayers,TeamA_flag){
+  PartySize = (AllMatches[0].length-2)/2;
+	CurMatchIndex_TeamOffset = 0;
+	if(!TeamA_flag){
+		CurMatchIndex_TeamOffset = PartySize+1; 
+	}
+	
+	UnwantedPlayersCondition = true;
+	for (let kk=0;  kk<UnwantedPlayers.length; kk++){
+		for (let jj=0;  jj<PartySize; jj++){
+			if(CurMatch[jj+CurMatchIndex_TeamOffset] == UnwantedPlayers[kk]){
+				UnwantedPlayersCondition = false; break;
+			}
+		}
+		if(!UnwantedPlayersCondition){
+			break;
+		}
+	}	
+	return UnwantedPlayersCondition;
+}
+
+function CalcAllMatches(AllPartiesTeamA, AllPartiesTeamB,TeamA,TeamB) {
+		
+	// Calculate all possible matches
+	PartySize = AllPartiesTeamA[0].length;
+	var AllMatches = get2DArray(AllPartiesTeamA.length*AllPartiesTeamB.length);
+	CurMatch = -1;
+	for (let ii=0;  ii<AllPartiesTeamA.length; ii++){
+		for (let jj=0;  jj<AllPartiesTeamB.length; jj++){		
+			CurMatch++;
+			
+			AllMatches[CurMatch][0] = CurMatch;
+
+			RatingDiff = 0;
+			for (let kk=0; kk<PartySize; kk++ ){
+				RatingDiff = RatingDiff + TeamA.Ratings[ AllPartiesTeamA[ii][kk] ] - TeamB.Ratings[ AllPartiesTeamB[jj][kk] ];
+				AllMatches[CurMatch][kk+1] = AllPartiesTeamA[ii][kk];
+				AllMatches[CurMatch][kk+1+PartySize] = AllPartiesTeamB[jj][kk];
+			}
+		  AllMatches[CurMatch][2*PartySize+1] = RatingDiff;
+		}
+	}
+	return AllMatches;
+
+}
+
+
+
+
+function CalcAllUniqueCombinations(n, k) {
+  var result = [];
+
+  // initialize array of values
+  var values = [];
+  for (var i = 1; i <= n; i++) {
+    values[i - 1] = i-1;
+  }
+
+  // initialize permutations
+  var perm = [];
+  for (var i = 0; i < n; i++) {
+    if (i < k) {
+      perm[i] = 1;
+    } else {
+      perm[i] = 0;
+    }
+  }
+  perm.sort();
+
+  whileloop:
+    while (true) {
+      // save subresult
+      var subresult = [];
+      for (var i = 0; i < n; i++) {
+        if (perm[i] == 1) {
+          subresult.push(values[i]);
+        }
+      }
+      result.push(subresult);
+
+      // get next permutation
+      for (var i = n - 1; i > 0; i--) {
+        if (perm[i - 1] == 1) {
+          continue;
+        }
+        if (perm[i] == 1) {
+          perm[i - 1] = 1;
+          perm[i] = 0;
+          perm = perm.slice(0, i).concat(perm.slice(i).sort())
+          continue whileloop;
+        }
+      }
+
+      // no additional permutations exist
+      break whileloop;
+    }
+
+  return result;
+}
+
+
+function get2DArray(size) {
+    size = size > 0 ? size : 0;
+    var arr = [];
+
+    while(size--) {
+        arr.push([]);
+    }
+
+    return arr;
+}
+
+
+function compareByLastColumn(a, b) {
+    if (a[a.length -1] === b[b.length -1]) {
+        return 0;
+    }
+    else {
+        return (Math.abs(a[a.length -1]) < Math.abs(b[b.length - 1])) ? -1 : 1;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+</script>
+
+
+</body>
+</html>
