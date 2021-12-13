@@ -8,8 +8,20 @@
 <p id="WrittenBy">Written by Bernhard Strasser ([o.p.]kanalratte). Version 0.1. Feel free to use or reuse this html & javascript code.</p>
 <br>
 <br>
-<br>
 
+<label for="PartySizeText">Players per Match and per Team:</label>
+<tab id=t1><input type="number" value="4" id="PartySize" name="PartySize" required
+       minlength="1" maxlength="3" size="3">
+<label for="MaxRatingDiffText">Maximum Allowed Rating Difference:</label>
+<tab id=t1><input type="number" value="200" id="MaxRatingDiff" name="MaxRatingDiff" required
+       minlength="1" maxlength="4" size="4">
+<label for="MaxShownMatchesText">Maximum Shown Matches:</label>
+<tab id=t1><input type="number" value="100" id="MaxShownMatches" name="MaxShownMatches" required
+       minlength="1" maxlength="3" size="3">       
+<br>
+<br>
+<br>
+    
 <p id="TeamAInput"><b> <font size="+2">&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbspNew Player Team A &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbspNew Player Team B</font></b></p>
 
 
@@ -51,7 +63,7 @@
 
 var TeamA = {Names: [], Ratings: [], PlayerNo: 0};
 var TeamB = {Names: [], Ratings: [], PlayerNo: 0};
-
+var FilterOptions = {MaxRatingDiff:[], TeamA_WantedPlayers:[], TeamA_UnwantedPlayers:[], TeamB_WantedPlayers:[], TeamB_UnwantedPlayers:[], MaxShownMatches: []};
 
 function AddPlayerTeamA() {
 	var PlayerName = document.getElementById("NewPlayerNameTeamA").value;
@@ -111,12 +123,9 @@ function AddPlayerTeamB() {
 
 function CalcAndShowResults() {
 
-	
-	FilterOptions = {MaxRatingDiff:200, TeamA_WantedPlayers:[0, 2], TeamA_UnwantedPlayers:[], TeamB_WantedPlayers:[], TeamB_UnwantedPlayers:[], MaxShownMatches: 100};
-	PartySize = 4;
-	//TeamA = {Names: ["fatman","Drinky","Martinzilla","kanalratte","Frankie","GuentherrDerRinge", "Dietrich"], Ratings: [2100, 1700, 1650, 1500, 1450, 1450, 1350], PlayerNo: [0, 1, 2, 3, 4, 5, 6]};
-	//TeamA = {Names: ["fatman","Drinky","Martinzilla","kanalratte"], Ratings: [2100, 1700, 1650, 1500], PlayerNo: 4};
-	//TeamB = {Names: ["Mettiu","paviz","Zuccolo","Judd_vp","Canazzo"], Ratings: [1900, 1730, 1900, 1750, 1450], PlayerNo: 5};	
+	FilterOptions.MaxShownMatches = parseInt(document.getElementById("MaxShownMatches").value);
+	FilterOptions.MaxRatingDiff = parseInt(document.getElementById("MaxRatingDiff").value);
+	var PartySize = parseInt(document.getElementById("PartySize").value);
 
 
 	// Calculate all possible parties for both teams
