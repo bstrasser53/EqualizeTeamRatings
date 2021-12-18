@@ -89,6 +89,12 @@ function AddPlayerTeamA() {
 	var PlayerName = document.getElementById("NewPlayerNameTeamA").value;
 	var PlayerRating = parseInt(document.getElementById("NewPlayerRatingTeamA").value);
 
+
+	if(TeamA.PlayerNo > 15)
+	{
+		return 1;
+	}
+
 	// Default Rating
 	if(isNaN(PlayerRating)){
 		PlayerRating = 1000;
@@ -100,21 +106,39 @@ function AddPlayerTeamA() {
 		NStandardNames = 0;
 		for (let ii=0;  ii<TeamA.PlayerNo; ii++){
 			CurName = TeamA.Names[ii];
-			if(CurName.match(/Name\s*\d+/i) !== null){
+			if(CurName.match(/Name\s*A\d+/i) !== null){
 				NStandardNames++;
 			}
 		}
-		PlayerName = "Name " + (NStandardNames+1);
+		PlayerName = "Name A" + (NStandardNames+1);
 	}	  
 	  
+	// Add Player to Team
 	TeamA.Names.push(PlayerName);
 	TeamA.Ratings.push(PlayerRating);
 	TeamA.PlayerNo = TeamA.PlayerNo + 1;
+	
+	// Create button for new player
+	let btn = document.createElement("button");
+	btn.innerHTML = PlayerName + "<br>" + PlayerRating;
+	btn.style.width = '100px';
+	btn.style.height = '3rem';
+	btn.addEventListener('contextmenu', e => {
+	e.preventDefault();
+	});
+	document.getElementById('TeamAPlayersDiv').appendChild(btn);
 	   	
 }
+
+
 function AddPlayerTeamB() {
 	var PlayerName = document.getElementById("NewPlayerNameTeamB").value;
 	var PlayerRating = parseInt(document.getElementById("NewPlayerRatingTeamB").value);
+
+	if(TeamB.PlayerNo > 15)
+	{
+		return 1;
+	}
 
 	// Default Rating
 	if(isNaN(PlayerRating)){
@@ -127,16 +151,27 @@ function AddPlayerTeamB() {
 		NStandardNames = 0;
 		for (let ii=0;  ii<TeamB.PlayerNo; ii++){
 			CurName = TeamB.Names[ii];
-			if(CurName.match(/Name\s*\d+/i) !== null){
+			if(CurName.match(/Name\s*B\d+/i) !== null){
 				NStandardNames++;
 			}
 		}
-		PlayerName = "Name " + (NStandardNames+1);
+		PlayerName = "Name B" + (NStandardNames+1);
 	}	
 
 	TeamB.Names.push(PlayerName);
 	TeamB.Ratings.push(PlayerRating);
 	TeamB.PlayerNo = TeamB.PlayerNo + 1;
+	
+	// Create button for new player
+	let btn = document.createElement("button");
+	btn.innerHTML = PlayerName + "<br>" + PlayerRating;
+	btn.style.width = '100px';
+	btn.style.height = '3rem';
+	btn.addEventListener('contextmenu', e => {
+	e.preventDefault();
+	});
+	document.getElementById('TeamBPlayersDiv').appendChild(btn);
+	
 }
 
 
@@ -256,7 +291,7 @@ function HumanizeMatches(FilteredMatches,TeamA,TeamB){
 
 function CheckForWantedPlayer(CurMatch,WantedPlayers,TeamA_flag){
   PartySize = (AllMatches[0].length-2)/2;
-	CurMatchIndex_TeamOffset = 0;
+	CurMatchIndex_TeamOffset = 1;
 	if(!TeamA_flag){
 		CurMatchIndex_TeamOffset = PartySize+1; 
 	}
@@ -278,7 +313,7 @@ function CheckForWantedPlayer(CurMatch,WantedPlayers,TeamA_flag){
 
 function CheckForUnwantedPlayer(CurMatch,UnwantedPlayers,TeamA_flag){
   PartySize = (AllMatches[0].length-2)/2;
-	CurMatchIndex_TeamOffset = 0;
+	CurMatchIndex_TeamOffset = 1;
 	if(!TeamA_flag){
 		CurMatchIndex_TeamOffset = PartySize+1; 
 	}
