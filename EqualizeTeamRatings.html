@@ -123,6 +123,8 @@ function AddPlayerTeamA() {
 	btn.innerHTML = PlayerName + "<br>" + PlayerRating;
 	btn.style.width = '100px';
 	btn.style.height = '3rem';
+	btn.onclick = LeftClickOnPlayerTeamA;
+	btn.oncontextmenu = RightClickOnPlayerTeamA;
 	btn.addEventListener('contextmenu', e => {
 	e.preventDefault();
 	});
@@ -167,10 +169,105 @@ function AddPlayerTeamB() {
 	btn.innerHTML = PlayerName + "<br>" + PlayerRating;
 	btn.style.width = '100px';
 	btn.style.height = '3rem';
+	btn.onclick = LeftClickOnPlayerTeamB;
+	btn.oncontextmenu = RightClickOnPlayerTeamB;
 	btn.addEventListener('contextmenu', e => {
 	e.preventDefault();
 	});
 	document.getElementById('TeamBPlayersDiv').appendChild(btn);
+	
+}
+
+
+function LeftClickOnPlayerTeamA(){ 
+	PlayerNo = this.innerHTML;
+	PlayerNo = PlayerNo.match(/.*?(?=<br>|$)/i)[0];
+	PlayerNo = TeamA.Names.indexOf(PlayerNo);
+	
+	// If left-clicking on green player --> set color back to normal, and remove player from Wanted-Players list
+	if( this.style.backgroundColor == "rgb(0, 255, 0)"){
+		this.style.backgroundColor = '';
+		Indie = FilterOptions.TeamA_WantedPlayers.indexOf(PlayerNo);
+		FilterOptions.TeamA_WantedPlayers.splice(Indie,1);			
+	}
+	// If color was red before: Remove player from unwanted players. If color was red or none before: Change color to green and add player to Wanted player
+	else{
+		if(this.style.backgroundColor == "rgb(255, 0, 0)"){
+			Indie = FilterOptions.TeamA_UnwantedPlayers.indexOf(PlayerNo);
+			FilterOptions.TeamA_UnwantedPlayers.splice(Indie,1);	
+		}
+		FilterOptions.TeamA_WantedPlayers.push(PlayerNo);
+		this.style.backgroundColor = 'rgb(0, 255, 0)';
+	}
+	
+}
+
+function RightClickOnPlayerTeamA(){ 
+	PlayerNo = this.innerHTML;
+	PlayerNo = PlayerNo.match(/.*?(?=<br>|$)/i)[0];
+	PlayerNo = TeamA.Names.indexOf(PlayerNo);
+	
+	// If right-clicking on red player --> set color back to normal, and remove player from UnWanted-Players list
+	if( this.style.backgroundColor == "rgb(255, 0, 0)"){
+		this.style.backgroundColor = '';
+		Indie = FilterOptions.TeamA_UnwantedPlayers.indexOf(PlayerNo);
+		FilterOptions.TeamA_UnwantedPlayers.splice(Indie,1);		
+	}
+	// If color was green before: Remove player from unwanted players. If color was red or none before: Change color to green and add player to Wanted player
+	else{
+		if(this.style.backgroundColor == "rgb(0, 255, 0)"){
+			Indie = FilterOptions.TeamA_WantedPlayers.indexOf(PlayerNo);
+			FilterOptions.TeamA_WantedPlayers.splice(Indie,1);
+		}
+		FilterOptions.TeamA_UnwantedPlayers.push(PlayerNo);
+		this.style.backgroundColor = 'rgb(255, 0, 0)';
+	}
+	
+}
+
+function LeftClickOnPlayerTeamB(){ 
+	PlayerNo = this.innerHTML;
+	PlayerNo = PlayerNo.match(/.*?(?=<br>|$)/i)[0];
+	PlayerNo = TeamB.Names.indexOf(PlayerNo);
+	
+	// If left-clicking on green player --> set color back to normal, and remove player from Wanted-Players list
+	if( this.style.backgroundColor == "rgb(0, 255, 0)"){
+		this.style.backgroundColor = '';
+		Indie = FilterOptions.TeamB_WantedPlayers.indexOf(PlayerNo);
+		FilterOptions.TeamA_WantedPlayers.splice(Indie,1);			
+	}
+	// If color was red before: Remove player from unwanted players. If color was red or none before: Change color to green and add player to Wanted player
+	else{
+		if(this.style.backgroundColor == "rgb(255, 0, 0)"){
+			Indie = FilterOptions.TeamB_UnwantedPlayers.indexOf(PlayerNo);
+			FilterOptions.TeamB_UnwantedPlayers.splice(Indie,1);
+		}
+		FilterOptions.TeamB_WantedPlayers.push(PlayerNo);
+		this.style.backgroundColor = 'rgb(0, 255, 0)';
+	}
+	
+}
+
+function RightClickOnPlayerTeamB(){ 
+	PlayerNo = this.innerHTML;
+	PlayerNo = PlayerNo.match(/.*?(?=<br>|$)/i)[0];
+	PlayerNo = TeamB.Names.indexOf(PlayerNo);
+	
+	// If right-clicking on red player --> set color back to normal, and remove player from UnWanted-Players list
+	if( this.style.backgroundColor == "rgb(255, 0, 0)"){
+		this.style.backgroundColor = '';
+			Indie = FilterOptions.TeamB_UnwantedPlayers.indexOf(PlayerNo);
+			FilterOptions.TeamB_UnwantedPlayers.splice(Indie,1);	
+	}
+	// If color was green before: Remove player from unwanted players. If color was red or none before: Change color to green and add player to Wanted player
+	else{
+		if(this.style.backgroundColor == "rgb(0, 255, 0)"){
+			Indie = FilterOptions.TeamB_WantedPlayers.indexOf(PlayerNo);
+			FilterOptions.TeamB_WantedPlayers.splice(Indie,1);
+		}
+		FilterOptions.TeamB_UnwantedPlayers.push(PlayerNo);
+		this.style.backgroundColor = 'rgb(255, 0, 0)';
+	}
 	
 }
 
