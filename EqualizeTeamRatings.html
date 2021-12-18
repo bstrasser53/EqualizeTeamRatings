@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<link rel="stylesheet" href="styles.css">
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 <body>
 
@@ -22,9 +23,15 @@
 <br>
 <br>
     
-<p id="TeamAInput"><b> <font size="+2">&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbspNew Player Team A &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbspNew Player Team B</font></b></p>
+<div class="container">
+	<div class="left-half">
 
+		<h1>Team A</h1>
+		<div class="addplayer-group">
+			<h2>New Player: </h2>
+		</div>
 
+		<div class="addplayer-group">			
 <label for="PlayerNameTeamA">Player Name:</label>
 <tab id=t1><input type="text" id="NewPlayerNameTeamA" name="NewPlayerNameTeamA"
        minlength="1" maxlength="14" size="14">
@@ -32,23 +39,36 @@
 <tab id=t1><input type="number" value="1000" id="NewPlayerRatingTeamA" name="NewPlayerRatingTeamA" required
        minlength="1" maxlength="4" size="4">
 <button type="button" onclick="AddPlayerTeamA()">Add Player</button>
-&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+		</div>
+
+		<div class="btn-group" id='TeamAPlayersDiv'>	
+		</div>
 
 
+	</div>
+	<div class="right-half">
+
+		<h1>Team B</h1>
+
+		<div class="addplayer-group">
+			<h2>New Player: </h2> 
+		</div>
+		<div class="addplayer-group">
 <label for="PlayerNameTeamB">Player Name:</label>
 <tab id=t1><input type="text" id="NewPlayerNameTeamB" name="NewPlayerNameTeamB"
        minlength="1" maxlength="14" size="14">
-
-
 <label for="PlayerRatingTeamB">Rating:</label>
 <tab id=t1><input type="number" value="1000" id="NewPlayerRatingTeamB" name="NewPlayerRatingTeamB" required
        minlength="1" maxlength="4" size="4">
 <button type="button" onclick="AddPlayerTeamB()">Add Player</button>
+		</div>
+
+		<div class="btn-group" id='TeamBPlayersDiv'>
+		</div>
+	</div>
+</div>
 
 
-<br>
-<br>
-<br>
 <br>
 <br>
 <button type="button" onclick="CalcAndShowResults()">Start Calculation...</button>
