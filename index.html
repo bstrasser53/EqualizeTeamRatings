@@ -310,6 +310,11 @@ function CalcAndShowResults() {
 	ResultTableA = document.getElementById("TeamAResultTable");
 	ResultTableB = document.getElementById("TeamBResultTable");	
 	
+	// Remove content of tables
+	ResultTableA.innerHTML = "";
+	ResultTableB.innerHTML = "";
+	
+	
 	TotTableHead = ["MatchId","Player 1","Player 2","Player 3","Player 4","Player 1","Player 2","Player 3","Player 4","Rating Diff (A-B)"];
 	generateTableHead(ResultTableA, TotTableHead.slice(0, PartySize+1));
     generateTable(ResultTableA,HumanReadableMatches,0,PartySize+1);
