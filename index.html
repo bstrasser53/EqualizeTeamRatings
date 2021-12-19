@@ -20,6 +20,7 @@
 <tab id=t1><input type="number" value="100" id="MaxShownMatches" name="MaxShownMatches" required
        minlength="1" maxlength="3" size="3">       
 <br>
+<button type="button" onclick="CalcAndShowResults()">Start Calculation...</button>
 <br>
 <br>
     
@@ -32,17 +33,22 @@
 		</div>
 
 		<div class="addplayer-group">			
-<label for="PlayerNameTeamA">Player Name:</label>
-<tab id=t1><input type="text" id="NewPlayerNameTeamA" name="NewPlayerNameTeamA"
-       minlength="1" maxlength="14" size="14">
-<label for="PlayerRatingTeamA">Rating:</label>
-<tab id=t1><input type="number" value="1000" id="NewPlayerRatingTeamA" name="NewPlayerRatingTeamA" required
-       minlength="1" maxlength="4" size="4">
-<button type="button" onclick="AddPlayerTeamA()">Add Player</button>
+			<label for="PlayerNameTeamA">Player Name:</label>
+			<tab id=t1><input type="text" id="NewPlayerNameTeamA" name="NewPlayerNameTeamA"
+				   minlength="1" maxlength="14" size="14">
+			<label for="PlayerRatingTeamA">Rating:</label>
+			<tab id=t1><input type="number" value="1000" id="NewPlayerRatingTeamA" name="NewPlayerRatingTeamA" required
+				   minlength="1" maxlength="4" size="4">
+			<button type="button" onclick="AddPlayerTeamA()">Add Player</button>
 		</div>
 
 		<div class="btn-group" id='TeamAPlayersDiv'>	
 		</div>
+		
+		<div class="result-table-TeamA">
+			<table id='TeamAResultTable'>
+			</table>	
+		</div>	
 
 
 	</div>
@@ -54,30 +60,29 @@
 			<h2>New Player: </h2> 
 		</div>
 		<div class="addplayer-group">
-<label for="PlayerNameTeamB">Player Name:</label>
-<tab id=t1><input type="text" id="NewPlayerNameTeamB" name="NewPlayerNameTeamB"
-       minlength="1" maxlength="14" size="14">
-<label for="PlayerRatingTeamB">Rating:</label>
-<tab id=t1><input type="number" value="1000" id="NewPlayerRatingTeamB" name="NewPlayerRatingTeamB" required
-       minlength="1" maxlength="4" size="4">
-<button type="button" onclick="AddPlayerTeamB()">Add Player</button>
+			<label for="PlayerNameTeamB">Player Name:</label>
+			<tab id=t1><input type="text" id="NewPlayerNameTeamB" name="NewPlayerNameTeamB"
+				   minlength="1" maxlength="14" size="14">
+			<label for="PlayerRatingTeamB">Rating:</label>
+			<tab id=t1><input type="number" value="1000" id="NewPlayerRatingTeamB" name="NewPlayerRatingTeamB" required
+				   minlength="1" maxlength="4" size="4">
+			<button type="button" onclick="AddPlayerTeamB()">Add Player</button>
 		</div>
 
 		<div class="btn-group" id='TeamBPlayersDiv'>
 		</div>
+		
+		<div class="result-table-TeamB">
+			<table id='TeamBResultTable'>
+			</table>		
+		</div>		
+		
 	</div>
 </div>
 
 
 <br>
-<br>
-<button type="button" onclick="CalcAndShowResults()">Start Calculation...</button>
 
-<br>
-<br>
-<br>
-<table>
-</table>
 
 <script>
 
@@ -300,12 +305,22 @@ function CalcAndShowResults() {
 
 	// Create output in form of table
 	
-	let table = document.querySelector("table");
-	generateTableHead(table, ["","","Team A","","","","","Team B","",""]);
-	generateTableHead(table, ["MatchId","Player 1","Player 2","Player 3","Player 4","Player 1","Player 2","Player 3","Player 4","Rating Diff (A-B)"]);
-    table.border = 3;
+	//let table = document.querySelector("table");
+	
+	ResultTableA = document.getElementById("TeamAResultTable");
+	ResultTableB = document.getElementById("TeamBResultTable");	
+	
+	TotTableHead = ["MatchId","Player 1","Player 2","Player 3","Player 4","Player 1","Player 2","Player 3","Player 4","Rating Diff (A-B)"];
+	generateTableHead(ResultTableA, TotTableHead.slice(0, PartySize+1));
+    generateTable(ResultTableA,HumanReadableMatches,0,PartySize+1);
+    ResultTableA.border = 3;
+ 
+ 
     
-    generateTable(table,HumanReadableMatches);
+   	generateTableHead(ResultTableB, TotTableHead.slice(PartySize+1,2*PartySize+2));
+    ResultTableB.border = 3;
+    generateTable(ResultTableB,HumanReadableMatches,PartySize+1,2*PartySize+2);   
+
 
 	
 }
@@ -543,12 +558,12 @@ function generateTableHead(table, data) {
 }
 
 
-function generateTable(table, data) {
+function generateTable(table, data,TableColIndexFrom,TableColIndexEnd) {
 
 	for (let ii=0;  ii<data.length; ii++){
 		CurRow = data[ii];	
     	let row = table.insertRow();		
-		for (let jj=0;  jj<CurRow.length; jj++){		
+		for (let jj=TableColIndexFrom;  jj<TableColIndexEnd; jj++){		
       		let cell = row.insertCell();
        		let text = document.createTextNode(CurRow[jj]);    
         	cell.appendChild(text); 

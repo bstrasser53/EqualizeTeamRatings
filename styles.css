@@ -62,3 +62,18 @@ h2 {
 	flex-direction: row;
 	padding: 0.5rem;
 }
+
+.result-table-TeamA {
+	display: flex;
+	flex-direction: column;
+	padding: 0.5rem;
+	align-items: right;
+}
+.result-table-TeamB {
+	display: flex;
+	flex-direction: column;
+	padding: 0.5rem;
+	align-items: left;
+}
+
+
