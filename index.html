@@ -239,7 +239,7 @@ function LeftClickOnPlayerTeamB(){
 	if( this.style.backgroundColor == "rgb(0, 255, 0)"){
 		this.style.backgroundColor = '';
 		Indie = FilterOptions.TeamB_WantedPlayers.indexOf(PlayerNo);
-		FilterOptions.TeamA_WantedPlayers.splice(Indie,1);			
+		FilterOptions.TeamB_WantedPlayers.splice(Indie,1);			
 	}
 	// If color was red before: Remove player from unwanted players. If color was red or none before: Change color to green and add player to Wanted player
 	else{
