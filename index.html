@@ -308,19 +308,22 @@ function CalcAndShowResults() {
 	AllPartiesTeamA = CalcAllUniqueCombinations(TeamA.PlayerNo,PartySize);
 	AllPartiesTeamB = CalcAllUniqueCombinations(TeamB.PlayerNo,PartySize);
 	
+	HumanReadableMatches = [];
 	
-	// Calculate all possible matches
-	AllMatches = CalcAllMatches(AllPartiesTeamA, AllPartiesTeamB,TeamA,TeamB,PartySize);
-	
-	// Sort Matches by Rating-Diff
-	AllMatches.sort(compareByLastColumn);
-	
-	// Filter Matches
-	FilteredMatches = FilterMatches(AllMatches,FilterOptions);
-	
-	// Create Human-Readable Matches
-	HumanReadableMatches = HumanizeMatches(FilteredMatches,TeamA,TeamB);
-
+	// Don't calculate anything if there are no parties in TeamA or TeamB
+	if(AllPartiesTeamA.length !== 0 && AllPartiesTeamB.length !== 0){
+		// Calculate all possible matches
+		AllMatches = CalcAllMatches(AllPartiesTeamA, AllPartiesTeamB,TeamA,TeamB,PartySize);
+		
+		// Sort Matches by Rating-Diff
+		AllMatches.sort(compareByLastColumn);
+		
+		// Filter Matches
+		FilteredMatches = FilterMatches(AllMatches,FilterOptions);
+		
+		// Create Human-Readable Matches
+		HumanReadableMatches = HumanizeMatches(FilteredMatches,TeamA,TeamB);
+	}
 
 	// Create output in form of table
 	
@@ -334,7 +337,14 @@ function CalcAndShowResults() {
 	ResultTableB.innerHTML = "";
 	
 	
-	TotTableHead = ["MatchId","Player 1","Player 2","Player 3","Player 4","Player 1","Player 2","Player 3","Player 4","Rating Diff (A-B)"];
+	TotTableHead = ["MatchId"];
+	for (let jj=0;  jj<2; jj++){	
+		for (let ii=0;  ii<PartySize; ii++){
+			TotTableHead.push("Player " + (ii+1));
+		}
+	}
+	TotTableHead.push("Rating Diff (A-B)");
+	
 	generateTableHead(ResultTableA, TotTableHead.slice(0, PartySize+1));
     generateTable(ResultTableA,HumanReadableMatches,0,PartySize+1);
     ResultTableA.border = 3;
@@ -498,6 +508,11 @@ function CalcAllMatches(AllPartiesTeamA, AllPartiesTeamB,TeamA,TeamB) {
 
 function CalcAllUniqueCombinations(n, k) {
   var result = [];
+
+	// No possible combinations for k > n
+	if(k > n){
+		return result;
+	}
 
   // initialize array of values
   var values = [];
