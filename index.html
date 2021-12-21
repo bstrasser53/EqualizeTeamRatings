@@ -507,59 +507,60 @@ function CalcAllMatches(AllPartiesTeamA, AllPartiesTeamB,TeamA,TeamB) {
 
 
 function CalcAllUniqueCombinations(n, k) {
-  var result = [];
+	var result = [];
 
 	// No possible combinations for k > n
 	if(k > n){
 		return result;
 	}
 
-  // initialize array of values
-  var values = [];
-  for (var i = 1; i <= n; i++) {
-    values[i - 1] = i-1;
-  }
+	// initialize array of values
+	var values = [];
+	for (var i = 1; i <= n; i++) {
+		values[i - 1] = i-1;
+	}
 
-  // initialize permutations
-  var perm = [];
-  for (var i = 0; i < n; i++) {
-    if (i < k) {
-      perm[i] = 1;
-    } else {
-      perm[i] = 0;
-    }
-  }
-  perm.sort();
+	// initialize permutations
+	var perm = [];
+	for (var i = 0; i < n; i++) {
+		if (i < k) {
+			perm[i] = 1;
+		} else {
+			perm[i] = 0;
+		}
+	}
+	perm.sort();
 
-  whileloop:
-    while (true) {
-      // save subresult
-      var subresult = [];
-      for (var i = 0; i < n; i++) {
-        if (perm[i] == 1) {
-          subresult.push(values[i]);
-        }
-      }
-      result.push(subresult);
+	whileloop:
+	while (true) 
+	{
+		// save subresult
+		var subresult = [];
+		for (var i = 0; i < n; i++) {
+			if (perm[i] == 1) {
+				subresult.push(values[i]);
+			}
+		}
+		result.push(subresult);
 
-      // get next permutation
-      for (var i = n - 1; i > 0; i--) {
-        if (perm[i - 1] == 1) {
-          continue;
-        }
-        if (perm[i] == 1) {
-          perm[i - 1] = 1;
-          perm[i] = 0;
-          perm = perm.slice(0, i).concat(perm.slice(i).sort())
-          continue whileloop;
-        }
-      }
+		// get next permutation
+		for (var i = n - 1; i > 0; i--) {
+			if (perm[i - 1] == 1) {
+				continue;
+			}
+			if (perm[i] == 1) {
+				perm[i - 1] = 1;
+				perm[i] = 0;
+				perm = perm.slice(0, i).concat(perm.slice(i).sort())
+				continue whileloop;
+			}
+		}
 
-      // no additional permutations exist
-      break whileloop;
-    }
+		// no additional permutations exist
+		break whileloop;
+	}
 
-  return result;
+	return result;
 }
 
 
@@ -586,14 +587,14 @@ function compareByLastColumn(a, b) {
 
 
 function generateTableHead(table, data) {
-  let thead = table.createTHead();
-  let row = thead.insertRow();
-  for (let key of data) {
-    let th = document.createElement("th");
-    let text = document.createTextNode(key);
-    th.appendChild(text);
-    row.appendChild(th);
-  }
+	let thead = table.createTHead();
+	let row = thead.insertRow();
+	for (let key of data) {
+		let th = document.createElement("th");
+		let text = document.createTextNode(key);
+		th.appendChild(text);
+		row.appendChild(th);
+	}
 }
 
 
