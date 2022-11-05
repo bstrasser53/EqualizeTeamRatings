@@ -16,8 +16,8 @@
 <label for="PartySizeText">Players per Match and per Team:</label>
 <tab id=t1><input type="number" value="4" id="PartySize" name="PartySize" required
        minlength="1" maxlength="3" size="3">
-<label for="MaxRatingDiffText">Maximum Allowed Rating Difference:</label>
-<tab id=t1><input type="number" value="200" id="MaxRatingDiff" name="MaxRatingDiff" required
+<label for="MaxRatingMetricText">Maximum Allowed Metric Difference:</label>
+<tab id=t1><input type="number" value="200" id="MaxRatingMetric" name="MaxRatingMetric" required
        minlength="1" maxlength="4" size="4">
 <label for="MaxShownMatchesText">Maximum Shown Matches:</label>
 <tab id=t1><input type="number" value="100" id="MaxShownMatches" name="MaxShownMatches" required
@@ -107,7 +107,7 @@
 
 var TeamA = {Names: [], Ratings: [], PlayerNo: 0};
 var TeamB = {Names: [], Ratings: [], PlayerNo: 0};
-var FilterOptions = {MaxRatingDiff:[], TeamA_WantedPlayers:[], TeamA_UnwantedPlayers:[], TeamB_WantedPlayers:[], TeamB_UnwantedPlayers:[], MaxShownMatches: []};
+var FilterOptions = {MaxRatingMetric:[], TeamA_WantedPlayers:[], TeamA_UnwantedPlayers:[], TeamB_WantedPlayers:[], TeamB_UnwantedPlayers:[], MaxShownMatches: []};
 
 function AddPlayerTeamA() {
 	var PlayerName = document.getElementById("NewPlayerNameTeamA").value;
@@ -300,7 +300,7 @@ function RightClickOnPlayerTeamB(){
 function CalcAndShowResults() {
 
 	FilterOptions.MaxShownMatches = parseInt(document.getElementById("MaxShownMatches").value);
-	FilterOptions.MaxRatingDiff = parseInt(document.getElementById("MaxRatingDiff").value);
+	FilterOptions.MaxRatingMetric = parseInt(document.getElementById("MaxRatingMetric").value);
 	var PartySize = parseInt(document.getElementById("PartySize").value);
 
 
@@ -364,7 +364,7 @@ function FilterMatches(AllMatches,FilterOptions) {
 	
 	// Filter Matches
 	FilteredMatches = [];
-	RatingDiffIndex = AllMatches[0].length - 1;
+	RatingMetricIndex = AllMatches[0].length - 1;
 	PartySize = (AllMatches[0].length-2)/2;
 	CurSavedMatches = 0;
 	for (let ii=0;  ii<AllMatches.length; ii++){
@@ -375,7 +375,7 @@ function FilterMatches(AllMatches,FilterOptions) {
 			}
 		
 			// Absolute Rating Difference Condition
-			RatingDifferenceCondition = Math.abs(AllMatches[ii][RatingDiffIndex]) <= FilterOptions.MaxRatingDiff;
+			RatingMetricCondition = Math.abs(AllMatches[ii][RatingMetricIndex]) <= FilterOptions.MaxRatingMetric;
 			
 			// Wanted Player Conditions for Both Teams
 			WantedPlayersCondition = CheckForWantedPlayer(AllMatches[ii],FilterOptions.TeamA_WantedPlayers,true);
@@ -390,7 +390,7 @@ function FilterMatches(AllMatches,FilterOptions) {
 			}
 
 			// Save Matches which Fulfill Our Wishes
-			if(RatingDifferenceCondition && WantedPlayersCondition && UnwantedPlayersCondition)
+			if(RatingMetricCondition && WantedPlayersCondition && UnwantedPlayersCondition)
 			{
 				CurSavedMatches++;
 				FilteredMatches.push(AllMatches[ii]);
@@ -490,13 +490,13 @@ function CalcAllMatches(AllPartiesTeamA, AllPartiesTeamB,TeamA,TeamB) {
 			
 			AllMatches[CurMatch][0] = CurMatch;
 
-			TotRatingDiff = CalcMetrtic_TotalRatingDifference(PartySize,AllPartiesTeamA[ii], AllPartiesTeamB[jj], TeamA.Ratings, TeamB.Ratings);
+			RatingMetric = CalcMetrtic_TotalRatingDifference(PartySize,AllPartiesTeamA[ii], AllPartiesTeamB[jj], TeamA.Ratings, TeamB.Ratings);
 
 			for (let kk=0; kk<PartySize; kk++ ){
 				AllMatches[CurMatch][kk+1] = AllPartiesTeamA[ii][kk];
 				AllMatches[CurMatch][kk+1+PartySize] = AllPartiesTeamB[jj][kk];
 			}
-		  AllMatches[CurMatch][2*PartySize+1] = TotRatingDiff;
+		  AllMatches[CurMatch][2*PartySize+1] = RatingMetric;
 		}
 	}
 	return AllMatches;
