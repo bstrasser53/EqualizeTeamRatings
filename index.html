@@ -490,19 +490,26 @@ function CalcAllMatches(AllPartiesTeamA, AllPartiesTeamB,TeamA,TeamB) {
 			
 			AllMatches[CurMatch][0] = CurMatch;
 
-			RatingDiff = 0;
+			TotRatingDiff = CalcMetrtic_TotalRatingDifference(PartySize,AllPartiesTeamA[ii], AllPartiesTeamB[jj], TeamA.Ratings, TeamB.Ratings);
+
 			for (let kk=0; kk<PartySize; kk++ ){
-				RatingDiff = RatingDiff + TeamA.Ratings[ AllPartiesTeamA[ii][kk] ] - TeamB.Ratings[ AllPartiesTeamB[jj][kk] ];
 				AllMatches[CurMatch][kk+1] = AllPartiesTeamA[ii][kk];
 				AllMatches[CurMatch][kk+1+PartySize] = AllPartiesTeamB[jj][kk];
 			}
-		  AllMatches[CurMatch][2*PartySize+1] = RatingDiff;
+		  AllMatches[CurMatch][2*PartySize+1] = TotRatingDiff;
 		}
 	}
 	return AllMatches;
 
 }
 
+function CalcMetrtic_TotalRatingDifference(PartySize, AllPartiesTeamA, AllPartiesTeamB, TeamARatings, TeamBRatings) {
+	TotRatingDiff = 0;
+	for (let kk=0; kk<PartySize; kk++ ){
+		TotRatingDiff = TotRatingDiff + TeamARatings[ AllPartiesTeamA[kk] ] - TeamBRatings[ AllPartiesTeamB[kk] ];
+	}
+	return TotRatingDiff;
+}
 
 
 
