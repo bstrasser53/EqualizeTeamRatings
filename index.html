@@ -7,7 +7,7 @@
 
 <h2>Equalize Team Ratings</h2>
 <t1>Written by Bernhard Strasser ([o.p.]kanalratte). Version 0.1. Feel free to use or reuse this html & javascript code.</t1><br>
-<t1>Usage: 1) Define player per match and team, maximum rating difference, and maximum shown matches. 2) Add players to each team.</t1><br>
+<t1>Usage: 1) Define player per match and team, maximum rating metric, and maximum shown matches. 2) Add players to each team.</t1><br>
 <t1>3) Select players who need to play in the next match by left-clicking them.</t1><br>
 <t1>4) Select players who must not play in the next match by right-clicking them. 5) Press "Start Calculation".</t1><br>
 <br>
@@ -343,7 +343,7 @@ function CalcAndShowResults() {
 			TotTableHead.push("Player " + (ii+1));
 		}
 	}
-	TotTableHead.push("Rating Diff (A-B)");
+	TotTableHead.push("Rating Metric");
 	
 	generateTableHead(ResultTableA, TotTableHead.slice(0, PartySize+1));
     generateTable(ResultTableA,HumanReadableMatches,0,PartySize+1);
@@ -490,7 +490,7 @@ function CalcAllMatches(AllPartiesTeamA, AllPartiesTeamB,TeamA,TeamB) {
 			
 			AllMatches[CurMatch][0] = CurMatch;
 
-			RatingMetric = CalcMetrtic_TotalRatingDifference(PartySize,AllPartiesTeamA[ii], AllPartiesTeamB[jj], TeamA.Ratings, TeamB.Ratings);
+			RatingMetric = CalcMetrtic_TotalAbsoluteDifference(PartySize,sliceByIndexArray(TeamA.Ratings,AllPartiesTeamA[ii]),sliceByIndexArray(TeamB.Ratings,AllPartiesTeamB[jj]));
 
 			for (let kk=0; kk<PartySize; kk++ ){
 				AllMatches[CurMatch][kk+1] = AllPartiesTeamA[ii][kk];
@@ -503,12 +503,42 @@ function CalcAllMatches(AllPartiesTeamA, AllPartiesTeamB,TeamA,TeamB) {
 
 }
 
-function CalcMetrtic_TotalRatingDifference(PartySize, AllPartiesTeamA, AllPartiesTeamB, TeamARatings, TeamBRatings) {
+function CalcMetrtic_TotalRatingDifference(PartySize, TeamARatings, TeamBRatings) {
 	TotRatingDiff = 0;
 	for (let kk=0; kk<PartySize; kk++ ){
-		TotRatingDiff = TotRatingDiff + TeamARatings[ AllPartiesTeamA[kk] ] - TeamBRatings[ AllPartiesTeamB[kk] ];
+		TotRatingDiff = TotRatingDiff + TeamARatings[kk] - TeamBRatings[kk];
 	}
 	return TotRatingDiff;
+}
+
+
+function CalcMetrtic_TotalAbsoluteDifference(PartySize, TeamARatings, TeamBRatings) {
+	// Compare best player of Team A to best player of Team B, and second best players, and third best players etc. 
+	// Then calculate the absolute sum of those differences
+	TeamARatings.sort(compareNumbers);
+	TeamBRatings.sort(compareNumbers);
+	TotAbsRatingDiff = 0;
+	for (let kk=0; kk<PartySize; kk++ ){
+		TotAbsRatingDiff = TotAbsRatingDiff + Math.abs( TeamARatings[kk] - TeamBRatings[kk] );
+	}
+	return TotAbsRatingDiff;
+}
+
+
+
+function compareNumbers(a, b) {
+  return a - b;
+}
+
+
+// Function to take a subarray (slicing) based on index-array. In Matlab notation A(B), where A is an array, and B is an array of indices.
+// Currently only works along one dimension
+function sliceByIndexArray(InputArray, IndexArray) {
+	Output = [];
+	for (let kk=0; kk<IndexArray.length; kk++ ){
+	  Output.push(InputArray[IndexArray[kk]]);
+	}
+	return Output;
 }
 
 
