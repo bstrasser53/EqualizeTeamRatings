@@ -58,6 +58,7 @@
 			<tab id=t1><input type="number" value="1000" id="NewPlayerRatingTeamA" name="NewPlayerRatingTeamA" required
 				   minlength="1" maxlength="4" size="4">
 			<button type="button" onclick="AddPlayerTeamA()">Add Player</button>
+			<button type="button" onclick="RemovePlayerTeamA()">Remove Player</button>
 		</div>
 
 		<div class="addplayer-group">
@@ -93,6 +94,7 @@
 			<tab id=t1><input type="number" value="1000" id="NewPlayerRatingTeamB" name="NewPlayerRatingTeamB" required
 				   minlength="1" maxlength="4" size="4">
 			<button type="button" onclick="AddPlayerTeamB()">Add Player</button>
+			<button type="button" onclick="RemovePlayerTeamB()">Remove Player</button>
 		</div>
 
 		<div class="addplayer-group">
@@ -119,8 +121,8 @@
 
 <script>
 
-var TeamA = {Names: [], Ratings: [], PlayerNo: 0};
-var TeamB = {Names: [], Ratings: [], PlayerNo: 0};
+var TeamA = {TeamName: "TeamA", Names: [], Ratings: [], PlayerNo: 0};
+var TeamB = {TeamName: "TeamB", Names: [], Ratings: [], PlayerNo: 0};
 var FilterOptions = {MaxRatingMetric:[], TeamA_WantedPlayers:[], TeamA_UnwantedPlayers:[], TeamB_WantedPlayers:[], TeamB_UnwantedPlayers:[], MaxShownMatches: []};
 
 function AddPlayerTeamA() {
@@ -159,6 +161,7 @@ function AddPlayerTeamA() {
 	// Create button for new player
 	let btn = document.createElement("button");
 	btn.innerHTML = PlayerName + "<br>" + PlayerRating;
+	btn.setAttribute("id", "TeamAPlayer"+PlayerName);
 	btn.style.width = '100px';
 	btn.style.height = '3rem';
 	btn.onclick = LeftClickOnPlayerTeamA;
@@ -205,6 +208,7 @@ function AddPlayerTeamB() {
 	// Create button for new player
 	let btn = document.createElement("button");
 	btn.innerHTML = PlayerName + "<br>" + PlayerRating;
+	btn.setAttribute("id", "TeamBPlayer"+PlayerName);
 	btn.style.width = '100px';
 	btn.style.height = '3rem';
 	btn.onclick = LeftClickOnPlayerTeamB;
@@ -214,6 +218,15 @@ function AddPlayerTeamB() {
 	});
 	document.getElementById('TeamBPlayersDiv').appendChild(btn);
 	
+}
+
+function RemovePlayerTeamA() {
+	var PlayerName = document.getElementById("NewPlayerNameTeamA").value;
+	RemovePlayer(TeamA,PlayerName)
+}
+function RemovePlayerTeamB() {
+	var PlayerName = document.getElementById("NewPlayerNameTeamB").value;
+	RemovePlayer(TeamB,PlayerName)
 }
 
 
@@ -686,6 +699,55 @@ function generateTable(table, data,TableColIndexFrom,TableColIndexEnd) {
 
 
 
+function RemoveAllPlayers(){
+	while (TeamA.PlayerNo > 0){
+		RemovePlayer(TeamA,TeamA.Names[0])
+	}
+	while (TeamB.PlayerNo > 0){
+		RemovePlayer(TeamB,TeamB.Names[0])
+	}
+}
+
+
+function RemovePlayer(Team,PlayerName) {
+
+	// No Name --> Do nothing
+	if(PlayerName == "" || Team == ""){
+		return 1;
+	}	  
+	  
+	// Remove Player
+	PlayerNo = Team.Names.indexOf(PlayerName);
+	Team.Names.splice(PlayerNo,1);
+	Team.Ratings.splice(PlayerNo,1);
+	Team.PlayerNo = Team.PlayerNo - 1;
+	
+	// Remove button for player
+	CurButton = document.getElementById(Team.TeamName+"Player"+PlayerName);
+	if(CurButton != null){
+		document.getElementById(Team.TeamName+'PlayersDiv').removeChild(CurButton);
+	}
+	
+	// Adapt left- and rightclicked players (if we remove a player, and some players after that player are left- or right-clicked, the wrong index will be stored in the 
+	// FilterOptions.TeamABWantedPlayers and UnwantedPlayers.
+	for (let ii=0;  ii<FilterOptions[Team.TeamName+"_WantedPlayers"].length; ii++){ 
+		if(FilterOptions[Team.TeamName+"_WantedPlayers"][ii] > PlayerNo) {
+			FilterOptions[Team.TeamName+"_WantedPlayers"][ii] = FilterOptions[Team.TeamName+"_WantedPlayers"][ii] - 1;
+		} 
+		else if(FilterOptions[Team.TeamName+"_WantedPlayers"][ii] == PlayerNo) {
+			FilterOptions[Team.TeamName+"_WantedPlayers"].splice(ii,1);
+		} 
+	}
+	for (let ii=0;  ii<FilterOptions[Team.TeamName+"_UnwantedPlayers"].length; ii++){ 
+		if(FilterOptions[Team.TeamName+"_UnwantedPlayers"][ii] > PlayerNo) {
+			FilterOptions[Team.TeamName+"_UnwantedPlayers"][ii] = FilterOptions[Team.TeamName+"_UnwantedPlayers"][ii] - 1;
+		} 
+		else if(FilterOptions[Team.TeamName+"_UnwantedPlayers"][ii] == PlayerNo) {
+			FilterOptions[Team.TeamName+"_UnwantedPlayers"].splice(ii,1);
+		} 
+	}	
+	
+}
 
 
 </script>
