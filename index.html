@@ -125,12 +125,10 @@ var TeamA = {TeamName: "TeamA", Names: [], Ratings: [], PlayerNo: 0};
 var TeamB = {TeamName: "TeamB", Names: [], Ratings: [], PlayerNo: 0};
 var FilterOptions = {MaxRatingMetric:[], TeamA_WantedPlayers:[], TeamA_UnwantedPlayers:[], TeamB_WantedPlayers:[], TeamB_UnwantedPlayers:[], MaxShownMatches: []};
 
-function AddPlayerTeamA() {
-	var PlayerName = document.getElementById("NewPlayerNameTeamA").value;
-	var PlayerRating = parseInt(document.getElementById("NewPlayerRatingTeamA").value);
 
+function AddPlayer(Team,PlayerName,PlayerRating) {
 
-	if(TeamA.PlayerNo > 15)
+	if(Team.PlayerNo > 15)
 	{
 		return 1;
 	}
@@ -144,8 +142,8 @@ function AddPlayerTeamA() {
 	if(PlayerName == ""){
 		// Search how often default name is already in use
 		NStandardNames = 0;
-		for (let ii=0;  ii<TeamA.PlayerNo; ii++){
-			CurName = TeamA.Names[ii];
+		for (let ii=0;  ii<Team.PlayerNo; ii++){
+			CurName = Team.Names[ii];
 			if(CurName.match(/Name\s*A\d+/i) !== null){
 				NStandardNames++;
 			}
@@ -154,27 +152,34 @@ function AddPlayerTeamA() {
 	}	  
 	   
 	// If Player name exists already, do nothing
-	if(TeamA.Names.includes(PlayerName) ){
+	if(Team.Names.includes(PlayerName) ){
 		return 1;
 	}
 	  
 	// Add Player to Team
-	TeamA.Names.push(PlayerName);
-	TeamA.Ratings.push(PlayerRating);
-	TeamA.PlayerNo = TeamA.PlayerNo + 1;
+	Team.Names.push(PlayerName);
+	Team.Ratings.push(PlayerRating);
+	Team.PlayerNo = Team.PlayerNo + 1;
 	
 	// Create button for new player
 	let btn = document.createElement("button");
 	btn.innerHTML = PlayerName + "<br>" + PlayerRating;
-	btn.setAttribute("id", "TeamAPlayer"+PlayerName);
+	btn.setAttribute("id", Team.TeamName+"Player"+PlayerName);
 	btn.style.width = '100px';
 	btn.style.height = '3rem';
-	btn.onclick = LeftClickOnPlayerTeamA;
-	btn.oncontextmenu = RightClickOnPlayerTeamA;
+	btn.onclick = window["LeftClickOnPlayer" + Team.TeamName];
+	btn.oncontextmenu = window["RightClickOnPlayer" + Team.TeamName];
 	btn.addEventListener('contextmenu', e => {
 	e.preventDefault();
 	});
-	document.getElementById('TeamAPlayersDiv').appendChild(btn);
+	document.getElementById(Team.TeamName+'PlayersDiv').appendChild(btn);
+	   	
+}
+
+function AddPlayerTeamA() {
+	var PlayerName = document.getElementById("NewPlayerNameTeamA").value;
+	var PlayerRating = parseInt(document.getElementById("NewPlayerRatingTeamA").value);
+	AddPlayer(TeamA,PlayerName,PlayerRating);
 	   	
 }
 
@@ -182,51 +187,7 @@ function AddPlayerTeamA() {
 function AddPlayerTeamB() {
 	var PlayerName = document.getElementById("NewPlayerNameTeamB").value;
 	var PlayerRating = parseInt(document.getElementById("NewPlayerRatingTeamB").value);
-
-	if(TeamB.PlayerNo > 15)
-	{
-		return 1;
-	}
-
-	// Default Rating
-	if(isNaN(PlayerRating)){
-		PlayerRating = 1000;
-	}
-
-	// Default Name
-	if(PlayerName == ""){
-		// Search how often default name is already in use
-		NStandardNames = 0;
-		for (let ii=0;  ii<TeamB.PlayerNo; ii++){
-			CurName = TeamB.Names[ii];
-			if(CurName.match(/Name\s*B\d+/i) !== null){
-				NStandardNames++;
-			}
-		}
-		PlayerName = "Name B" + (NStandardNames+1);
-	}	
-	
-	// If Player name exists already, do nothing
-	if(TeamB.Names.includes(PlayerName) ){
-		return 1;
-	}
-
-	TeamB.Names.push(PlayerName);
-	TeamB.Ratings.push(PlayerRating);
-	TeamB.PlayerNo = TeamB.PlayerNo + 1;
-	
-	// Create button for new player
-	let btn = document.createElement("button");
-	btn.innerHTML = PlayerName + "<br>" + PlayerRating;
-	btn.setAttribute("id", "TeamBPlayer"+PlayerName);
-	btn.style.width = '100px';
-	btn.style.height = '3rem';
-	btn.onclick = LeftClickOnPlayerTeamB;
-	btn.oncontextmenu = RightClickOnPlayerTeamB;
-	btn.addEventListener('contextmenu', e => {
-	e.preventDefault();
-	});
-	document.getElementById('TeamBPlayersDiv').appendChild(btn);
+	AddPlayer(TeamB,PlayerName,PlayerRating);
 	
 }
 
@@ -707,6 +668,65 @@ function generateTable(table, data,TableColIndexFrom,TableColIndexEnd) {
 
 
 
+var LoadPlayersFromFile = function(event) {
+	var input = event.target;
+	var reader = new FileReader();
+	reader.onload = function(){
+		var text = reader.result;
+		RemoveAllPlayers();
+		AddPlayersFromLoadedFile(text);
+	};
+	reader.readAsText(input.files[0]);
+	return 0;
+};
+
+function AddPlayersFromLoadedFile(text) {
+	
+	while (text.length > 2){
+		
+
+		NewTeam = text.slice(0,text.indexOf(":"));								// Search for occurence of ":". This symbol indicates that we define a team
+		if(NewTeam.indexOf(",") < 0){											// But if we find a "," in the cut text, we first have new players in the current team. Otherwise we found new team
+			CurTeam = window[NewTeam];											// NewTeam is e.g. string "TeamA", need to convert that into the object TeamA.
+			text = text.substring(text.indexOf('\r')+2,9999);					// Remove the part from 0 to the first carriage return
+		}
+		
+		CurName = text.slice(0,text.indexOf(","));								// Take text from 0 to first occurence of a comma ","
+		CurName = CurName.replace(/[^\w öüä]/ig,"");							// [^\w öüä] means anything not a "word character" (characters, numbers, underscore), space ö ü or ä. /ig means case instensitive and global (not just first match)	
+		CurElo = parseInt(text.slice(text.indexOf(",")+1,text.indexOf('\r')));	// Take text from first comma to carriage return, then convert to int
+		text = text.substring(text.indexOf('\r')+2,9999);						// Remove the part from 0 to the first carriage return
+		if(CurName !== "" && !isNaN(CurElo)){									// Only add player if we found meaningful input
+			AddPlayer(CurTeam,CurName,CurElo);
+		}
+	}
+	return 0;
+}
+
+
+function linkDownload(a, filename, content) {
+	contentType =  'data:application/octet-stream,';
+	uriContent = contentType + encodeURIComponent(content);
+	a.setAttribute('href', uriContent);
+	a.setAttribute('download', filename);
+}
+function download(filename) {
+	var a = document.createElement('a');
+		
+	var text = "";	
+	text = text + "TeamA:\r\n";
+	for (let ii=0;  ii<TeamA.PlayerNo; ii++){
+		text = text + TeamA.Names[ii] + "," + TeamA.Ratings[ii] + "\r\n";	
+	}
+	text = text + "TeamB:\r\n";
+	for (let ii=0;  ii<TeamB.PlayerNo; ii++){
+		text = text + TeamB.Names[ii] + "," + TeamB.Ratings[ii] + "\r\n";	
+	}
+	
+	linkDownload(a, filename, text);
+	document.body.appendChild(a);
+	a.click();
+	document.body.removeChild(a);
+}
 
 
 function RemoveAllPlayers(){
