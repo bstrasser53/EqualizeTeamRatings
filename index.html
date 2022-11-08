@@ -152,6 +152,11 @@ function AddPlayerTeamA() {
 		}
 		PlayerName = "Name A" + (NStandardNames+1);
 	}	  
+	   
+	// If Player name exists already, do nothing
+	if(TeamA.Names.includes(PlayerName) ){
+		return 1;
+	}
 	  
 	// Add Player to Team
 	TeamA.Names.push(PlayerName);
@@ -200,6 +205,11 @@ function AddPlayerTeamB() {
 		}
 		PlayerName = "Name B" + (NStandardNames+1);
 	}	
+	
+	// If Player name exists already, do nothing
+	if(TeamB.Names.includes(PlayerName) ){
+		return 1;
+	}
 
 	TeamB.Names.push(PlayerName);
 	TeamB.Ratings.push(PlayerRating);
