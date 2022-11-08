@@ -24,6 +24,15 @@
        minlength="1" maxlength="3" size="3">       
 <br>
 <br>
+<label for="MetricText">Metric for finding best matches:</label>
+<input type="radio" name="size" value="M" id="RadioButtonMatchAvg" checked>
+<label for="RadioButtonMatchAvg">Match average ratings</label>
+<input type="radio" name="size" value="M" id="RadioButtonMatchInd">
+<label for="RadioButtonMatchInd">Match individual ratings</label>
+<input type="radio" name="size" value="M" id="RadioButtonMatchBoth">
+<label for="RadioButtonMatchBoth">Match Both</label>
+<br>
+<br>
 <button type="button" onclick="CalcAndShowResults()">Start Calculation...</button>
 <br>
 <br>
@@ -482,6 +491,18 @@ function CalcAllMatches(AllPartiesTeamA, AllPartiesTeamB,TeamA,TeamB) {
 		
 	// Calculate all possible matches
 	PartySize = AllPartiesTeamA[0].length;
+	
+	if(document.getElementById("RadioButtonMatchAvg").checked) {
+		MetricFunction = CalcMetrtic_TotalRatingDifference;
+	}
+	else if(document.getElementById("RadioButtonMatchInd").checked){
+		MetricFunction = CalcMetrtic_TotalAbsoluteDifference;	
+	}
+	else if(document.getElementById("RadioButtonMatchBoth").checked){
+		MetricFunction = CalcMetrtic_TotalAbsoluteDifferenceAndTotalDifference;	
+	}
+	
+	
 	var AllMatches = get2DArray(AllPartiesTeamA.length*AllPartiesTeamB.length);
 	CurMatch = -1;
 	for (let ii=0;  ii<AllPartiesTeamA.length; ii++){
@@ -490,7 +511,7 @@ function CalcAllMatches(AllPartiesTeamA, AllPartiesTeamB,TeamA,TeamB) {
 			
 			AllMatches[CurMatch][0] = CurMatch;
 
-			RatingMetric = CalcMetrtic_TotalAbsoluteDifference(PartySize,sliceByIndexArray(TeamA.Ratings,AllPartiesTeamA[ii]),sliceByIndexArray(TeamB.Ratings,AllPartiesTeamB[jj]));
+			RatingMetric = MetricFunction(PartySize,sliceByIndexArray(TeamA.Ratings,AllPartiesTeamA[ii]),sliceByIndexArray(TeamB.Ratings,AllPartiesTeamB[jj]));
 
 			for (let kk=0; kk<PartySize; kk++ ){
 				AllMatches[CurMatch][kk+1] = AllPartiesTeamA[ii][kk];
@@ -524,6 +545,11 @@ function CalcMetrtic_TotalAbsoluteDifference(PartySize, TeamARatings, TeamBRatin
 	return TotAbsRatingDiff;
 }
 
+
+function CalcMetrtic_TotalAbsoluteDifferenceAndTotalDifference(PartySize, TeamARatings, TeamBRatings) {
+	TotRatingDiff = 0.5*CalcMetrtic_TotalAbsoluteDifference(PartySize, TeamARatings, TeamBRatings) + 0.5*Math.abs(CalcMetrtic_TotalRatingDifference(PartySize, TeamARatings, TeamBRatings));
+	return TotRatingDiff;
+}
 
 
 function compareNumbers(a, b) {
