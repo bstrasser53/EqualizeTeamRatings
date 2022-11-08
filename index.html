@@ -35,6 +35,9 @@
 <label for="RadioButtonMatchBoth">Match Both</label>
 <br>
 <br>
+<button onclick="download('Players.txt');">Save File</button>  
+<input type="file" accept='text/plain' onchange='LoadPlayersFromFile(event)' id="files" class="inputfile"/>
+<label for="files">Load File</label>
 <button type="button" onclick="CalcAndShowResults()">Start Calculation...</button>
 <br>
 <br>
